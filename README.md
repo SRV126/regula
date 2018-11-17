@@ -1,0 +1,2 @@
+# regula
+DBMS Mini Project
