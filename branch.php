@@ -33,18 +33,18 @@
     
     
     
-    class unitsPage extends Page
+    class branchPage extends Page
     {
         protected function DoBeforeCreate()
         {
             $this->dataset = new TableDataset(
                 MySqlIConnectionFactory::getInstance(),
                 GetConnectionOptions(),
-                '`units`');
+                '`branch`');
             $this->dataset->addFields(
                 array(
-                    new StringField('name'),
-                    new StringField('subcode', true, true)
+                    new StringField('bname'),
+                    new StringField('bcode', true, true)
                 )
             );
         }
@@ -77,16 +77,16 @@
         protected function getFiltersColumns()
         {
             return array(
-                new FilterColumn($this->dataset, 'name', 'name', 'Name'),
-                new FilterColumn($this->dataset, 'subcode', 'subcode', 'Subject Code')
+                new FilterColumn($this->dataset, 'bname', 'bname', 'Branch Name'),
+                new FilterColumn($this->dataset, 'bcode', 'bcode', 'Branch Code')
             );
         }
     
         protected function setupQuickFilter(QuickFilter $quickFilter, FixedKeysArray $columns)
         {
             $quickFilter
-                ->addColumn($columns['name'])
-                ->addColumn($columns['subcode']);
+                ->addColumn($columns['bname'])
+                ->addColumn($columns['bcode']);
         }
     
         protected function setupColumnFilter(ColumnFilter $columnFilter)
@@ -140,9 +140,9 @@
         protected function AddFieldColumns(Grid $grid, $withDetails = true)
         {
             //
-            // View column for name field
+            // View column for bname field
             //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
+            $column = new TextViewColumn('bname', 'bname', 'Branch Name', $this->dataset);
             $column->SetOrderable(true);
             $column->setMinimalVisibility(ColumnVisibility::PHONE);
             $column->SetDescription('');
@@ -150,9 +150,9 @@
             $grid->AddViewColumn($column);
             
             //
-            // View column for subcode field
+            // View column for bcode field
             //
-            $column = new TextViewColumn('subcode', 'subcode', 'Subject Code', $this->dataset);
+            $column = new TextViewColumn('bcode', 'bcode', 'Branch Code', $this->dataset);
             $column->SetOrderable(true);
             $column->setMinimalVisibility(ColumnVisibility::PHONE);
             $column->SetDescription('');
@@ -163,16 +163,16 @@
         protected function AddSingleRecordViewColumns(Grid $grid)
         {
             //
-            // View column for name field
+            // View column for bname field
             //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
+            $column = new TextViewColumn('bname', 'bname', 'Branch Name', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddSingleRecordViewColumn($column);
             
             //
-            // View column for subcode field
+            // View column for bcode field
             //
-            $column = new TextViewColumn('subcode', 'subcode', 'Subject Code', $this->dataset);
+            $column = new TextViewColumn('bcode', 'bcode', 'Branch Code', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddSingleRecordViewColumn($column);
         }
@@ -180,21 +180,21 @@
         protected function AddEditColumns(Grid $grid)
         {
             //
-            // Edit column for name field
+            // Edit column for bname field
             //
-            $editor = new TextEdit('name_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Name', 'name', $editor, $this->dataset);
+            $editor = new TextEdit('bname_edit');
+            $editor->SetMaxLength(50);
+            $editColumn = new CustomEditColumn('Branch Name', 'bname', $editor, $this->dataset);
             $editColumn->SetAllowSetToNull(true);
             $this->ApplyCommonColumnEditProperties($editColumn);
             $grid->AddEditColumn($editColumn);
             
             //
-            // Edit column for subcode field
+            // Edit column for bcode field
             //
-            $editor = new TextEdit('subcode_edit');
-            $editor->SetMaxLength(10);
-            $editColumn = new CustomEditColumn('Subject Code', 'subcode', $editor, $this->dataset);
+            $editor = new TextEdit('bcode_edit');
+            $editor->SetMaxLength(5);
+            $editColumn = new CustomEditColumn('Branch Code', 'bcode', $editor, $this->dataset);
             $validator = new RequiredValidator(StringUtils::Format($this->GetLocalizerCaptions()->GetMessageString('RequiredValidationMessage'), $editColumn->GetCaption()));
             $editor->GetValidatorCollection()->AddValidator($validator);
             $this->ApplyCommonColumnEditProperties($editColumn);
@@ -204,11 +204,11 @@
         protected function AddMultiEditColumns(Grid $grid)
         {
             //
-            // Edit column for name field
+            // Edit column for bname field
             //
-            $editor = new TextEdit('name_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Name', 'name', $editor, $this->dataset);
+            $editor = new TextEdit('bname_edit');
+            $editor->SetMaxLength(50);
+            $editColumn = new CustomEditColumn('Branch Name', 'bname', $editor, $this->dataset);
             $editColumn->SetAllowSetToNull(true);
             $this->ApplyCommonColumnEditProperties($editColumn);
             $grid->AddMultiEditColumn($editColumn);
@@ -217,21 +217,21 @@
         protected function AddInsertColumns(Grid $grid)
         {
             //
-            // Edit column for name field
+            // Edit column for bname field
             //
-            $editor = new TextEdit('name_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Name', 'name', $editor, $this->dataset);
+            $editor = new TextEdit('bname_edit');
+            $editor->SetMaxLength(50);
+            $editColumn = new CustomEditColumn('Branch Name', 'bname', $editor, $this->dataset);
             $editColumn->SetAllowSetToNull(true);
             $this->ApplyCommonColumnEditProperties($editColumn);
             $grid->AddInsertColumn($editColumn);
             
             //
-            // Edit column for subcode field
+            // Edit column for bcode field
             //
-            $editor = new TextEdit('subcode_edit');
-            $editor->SetMaxLength(10);
-            $editColumn = new CustomEditColumn('Subject Code', 'subcode', $editor, $this->dataset);
+            $editor = new TextEdit('bcode_edit');
+            $editor->SetMaxLength(5);
+            $editColumn = new CustomEditColumn('Branch Code', 'bcode', $editor, $this->dataset);
             $validator = new RequiredValidator(StringUtils::Format($this->GetLocalizerCaptions()->GetMessageString('RequiredValidationMessage'), $editColumn->GetCaption()));
             $editor->GetValidatorCollection()->AddValidator($validator);
             $this->ApplyCommonColumnEditProperties($editColumn);
@@ -247,16 +247,16 @@
         protected function AddPrintColumns(Grid $grid)
         {
             //
-            // View column for name field
+            // View column for bname field
             //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
+            $column = new TextViewColumn('bname', 'bname', 'Branch Name', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddPrintColumn($column);
             
             //
-            // View column for subcode field
+            // View column for bcode field
             //
-            $column = new TextViewColumn('subcode', 'subcode', 'Subject Code', $this->dataset);
+            $column = new TextViewColumn('bcode', 'bcode', 'Branch Code', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddPrintColumn($column);
         }
@@ -264,16 +264,16 @@
         protected function AddExportColumns(Grid $grid)
         {
             //
-            // View column for name field
+            // View column for bname field
             //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
+            $column = new TextViewColumn('bname', 'bname', 'Branch Name', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddExportColumn($column);
             
             //
-            // View column for subcode field
+            // View column for bcode field
             //
-            $column = new TextViewColumn('subcode', 'subcode', 'Subject Code', $this->dataset);
+            $column = new TextViewColumn('bcode', 'bcode', 'Branch Code', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddExportColumn($column);
         }
@@ -281,16 +281,16 @@
         private function AddCompareColumns(Grid $grid)
         {
             //
-            // View column for name field
+            // View column for bname field
             //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
+            $column = new TextViewColumn('bname', 'bname', 'Branch Name', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddCompareColumn($column);
             
             //
-            // View column for subcode field
+            // View column for bcode field
             //
-            $column = new TextViewColumn('subcode', 'subcode', 'Subject Code', $this->dataset);
+            $column = new TextViewColumn('bcode', 'bcode', 'Branch Code', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddCompareColumn($column);
         }
@@ -535,12 +535,12 @@
 
     try
     {
-        $Page = new unitsPage("units", "units.php", GetCurrentUserPermissionSetForDataSource("units"), 'UTF-8');
-        $Page->SetTitle('Subjects');
-        $Page->SetMenuLabel('Subjects');
+        $Page = new branchPage("branch", "branch.php", GetCurrentUserPermissionSetForDataSource("branch"), 'UTF-8');
+        $Page->SetTitle('Branch');
+        $Page->SetMenuLabel('Branch');
         $Page->SetHeader(GetPagesHeader());
         $Page->SetFooter(GetPagesFooter());
-        $Page->SetRecordPermission(GetCurrentUserRecordPermissionsForDataSource("units"));
+        $Page->SetRecordPermission(GetCurrentUserRecordPermissionsForDataSource("branch"));
         GetApplication()->SetMainPage($Page);
         GetApplication()->Run();
     }

@@ -13,7 +13,7 @@
 <!-- Navbar (sit on top) -->
 <div class="w3-top">
   <div class="w3-bar w3-white w3-wide w3-padding w3-card">
-    <a href="http://regula.ml" class="w3-bar-item w3-button"><img src="http://regula.unaux.com/img/reg.jpg" alt="Lamp" width="60" height="40">  <b>REGULA</b> ATTENDANCE MANAGEMENT SYSTEM</a>
+    <a href="wwww.regula.ml" class="w3-bar-item w3-button"><img src="http://regula.ml/img/reg.jpg" alt="Lamp" width="60" height="40"><b>REGULA</b> ATTENDANCE MANAGEMENT SYSTEM</a>
     <!-- Float links to the right. Hide them on small screens -->
     <div class="w3-right w3-hide-small">
       <a href="#projects" class="w3-bar-item w3-button">About</a>

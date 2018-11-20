@@ -61,11 +61,12 @@ function GetPageGroups()
 function GetPageInfos()
 {
     $result = array();
-    $result[] = array('caption' => 'Attendance', 'short_caption' => 'Attendance', 'filename' => 'attendance.php', 'name' => 'attendance', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
+    $result[] = array('caption' => 'Attendance', 'short_caption' => 'Attendance', 'filename' => 'attendance2.php', 'name' => 'attendance2', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
     $result[] = array('caption' => 'Shortage', 'short_caption' => 'Shortage', 'filename' => 'shortage.php', 'name' => 'shortage', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
     $result[] = array('caption' => 'Students', 'short_caption' => 'Students', 'filename' => 'students.php', 'name' => 'students', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
     $result[] = array('caption' => 'Subjects', 'short_caption' => 'Subjects', 'filename' => 'units.php', 'name' => 'units', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
-    $result[] = array('caption' => 'Branches', 'short_caption' => 'Branches', 'filename' => 'courses.php', 'name' => 'courses', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
+    $result[] = array('caption' => 'Branch', 'short_caption' => 'Branch', 'filename' => 'branch.php', 'name' => 'branch', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
+    $result[] = array('caption' => 'Log', 'short_caption' => 'Log', 'filename' => 'logview.php', 'name' => 'logview', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
     $result[] = array('caption' => 'About', 'short_caption' => 'About', 'filename' => 'membership_userrecords.php', 'name' => 'membership_userrecords', 'group_name' => 'Default', 'add_separator' => false, 'description' => '');
     return $result;
 }
@@ -93,13 +94,13 @@ function GetPagesHeader()
 function GetPagesFooter()
 {
     return
-        '© 2018 REGULA | Saurav Sirohi';
+        '©2018 REGULA | Saurav Sirohi';
 }
 
 function ApplyCommonPageSettings(Page $page, Grid $grid)
 {
     $page->SetShowUserAuthBar(true);
-    $page->setShowNavigation(true);
+    $page->setShowNavigation(false);
     $page->OnCustomHTMLHeader->AddListener('Global_CustomHTMLHeaderHandler');
     $page->OnGetCustomTemplate->AddListener('Global_GetCustomTemplateHandler');
     $page->OnGetCustomExportOptions->AddListener('Global_OnGetCustomExportOptions');

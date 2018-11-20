@@ -33,18 +33,21 @@
     
     
     
-    class coursesPage extends Page
+    class logviewPage extends Page
     {
         protected function DoBeforeCreate()
         {
             $this->dataset = new TableDataset(
                 MySqlIConnectionFactory::getInstance(),
                 GetConnectionOptions(),
-                '`courses`');
+                '`logview`');
             $this->dataset->addFields(
                 array(
-                    new IntegerField('id', true, true, true),
-                    new StringField('name')
+                    new IntegerField('slno', true, true),
+                    new IntegerField('id', false, true),
+                    new StringField('usn', false, true),
+                    new StringField('action', false, true),
+                    new StringField('chdate', false, true)
                 )
             );
         }
@@ -77,15 +80,17 @@
         protected function getFiltersColumns()
         {
             return array(
+                new FilterColumn($this->dataset, 'slno', 'slno', 'S.No.'),
                 new FilterColumn($this->dataset, 'id', 'id', 'Id'),
-                new FilterColumn($this->dataset, 'name', 'name', 'Name')
+                new FilterColumn($this->dataset, 'usn', 'usn', 'USN'),
+                new FilterColumn($this->dataset, 'action', 'action', 'Action'),
+                new FilterColumn($this->dataset, 'chdate', 'chdate', 'Event Date')
             );
         }
     
         protected function setupQuickFilter(QuickFilter $quickFilter, FixedKeysArray $columns)
         {
-            $quickFilter
-                ->addColumn($columns['name']);
+    
         }
     
         protected function setupColumnFilter(ColumnFilter $columnFilter)
@@ -106,32 +111,10 @@
             
             if ($this->GetSecurityInfo()->HasViewGrant())
             {
-                $operation = new LinkOperation($this->GetLocalizerCaptions()->GetMessageString('View'), OPERATION_VIEW, $this->dataset, $grid);
-                $operation->setUseImage(true);
-                $actions->addOperation($operation);
-            }
-            
-            if ($this->GetSecurityInfo()->HasEditGrant())
-            {
-                $operation = new LinkOperation($this->GetLocalizerCaptions()->GetMessageString('Edit'), OPERATION_EDIT, $this->dataset, $grid);
-                $operation->setUseImage(true);
-                $actions->addOperation($operation);
-                $operation->OnShow->AddListener('ShowEditButtonHandler', $this);
-            }
-            
-            if ($this->GetSecurityInfo()->HasDeleteGrant())
-            {
-                $operation = new LinkOperation($this->GetLocalizerCaptions()->GetMessageString('Delete'), OPERATION_DELETE, $this->dataset, $grid);
-                $operation->setUseImage(true);
-                $actions->addOperation($operation);
-                $operation->OnShow->AddListener('ShowDeleteButtonHandler', $this);
-                $operation->SetAdditionalAttribute('data-modal-operation', 'delete');
-                $operation->SetAdditionalAttribute('data-delete-handler-name', $this->GetModalGridDeleteHandler());
-            }
-            
-            if ($this->GetSecurityInfo()->HasAddGrant())
-            {
-                $operation = new LinkOperation($this->GetLocalizerCaptions()->GetMessageString('Copy'), OPERATION_COPY, $this->dataset, $grid);
+                $operation = new AjaxOperation(OPERATION_VIEW,
+                    $this->GetLocalizerCaptions()->GetMessageString('View'),
+                    $this->GetLocalizerCaptions()->GetMessageString('View'), $this->dataset,
+                    $this->GetModalGridViewHandler(), $grid);
                 $operation->setUseImage(true);
                 $actions->addOperation($operation);
             }
@@ -140,10 +123,44 @@
         protected function AddFieldColumns(Grid $grid, $withDetails = true)
         {
             //
-            // View column for name field
+            // View column for slno field
             //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
+            $column = new NumberViewColumn('slno', 'slno', 'S.No.', $this->dataset);
             $column->SetOrderable(true);
+            $column->setNumberAfterDecimal(0);
+            $column->setThousandsSeparator(',');
+            $column->setDecimalSeparator('');
+            $column->setMinimalVisibility(ColumnVisibility::PHONE);
+            $column->SetDescription('');
+            $column->SetFixedWidth(null);
+            $grid->AddViewColumn($column);
+            
+            //
+            // View column for usn field
+            //
+            $column = new TextViewColumn('usn', 'usn', 'USN', $this->dataset);
+            $column->SetOrderable(true);
+            $column->setMinimalVisibility(ColumnVisibility::PHONE);
+            $column->SetDescription('');
+            $column->SetFixedWidth(null);
+            $grid->AddViewColumn($column);
+            
+            //
+            // View column for action field
+            //
+            $column = new TextViewColumn('action', 'action', 'Action', $this->dataset);
+            $column->SetOrderable(true);
+            $column->setMinimalVisibility(ColumnVisibility::PHONE);
+            $column->SetDescription('');
+            $column->SetFixedWidth(null);
+            $grid->AddViewColumn($column);
+            
+            //
+            // View column for chdate field
+            //
+            $column = new DateTimeViewColumn('chdate', 'chdate', 'Event Date', $this->dataset);
+            $column->SetOrderable(true);
+            $column->SetDateTimeFormat('Y-m-d H:i:s');
             $column->setMinimalVisibility(ColumnVisibility::PHONE);
             $column->SetDescription('');
             $column->SetFixedWidth(null);
@@ -153,51 +170,52 @@
         protected function AddSingleRecordViewColumns(Grid $grid)
         {
             //
-            // View column for name field
+            // View column for slno field
             //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
+            $column = new NumberViewColumn('slno', 'slno', 'S.No.', $this->dataset);
             $column->SetOrderable(true);
+            $column->setNumberAfterDecimal(0);
+            $column->setThousandsSeparator(',');
+            $column->setDecimalSeparator('');
+            $grid->AddSingleRecordViewColumn($column);
+            
+            //
+            // View column for usn field
+            //
+            $column = new TextViewColumn('usn', 'usn', 'USN', $this->dataset);
+            $column->SetOrderable(true);
+            $grid->AddSingleRecordViewColumn($column);
+            
+            //
+            // View column for action field
+            //
+            $column = new TextViewColumn('action', 'action', 'Action', $this->dataset);
+            $column->SetOrderable(true);
+            $grid->AddSingleRecordViewColumn($column);
+            
+            //
+            // View column for chdate field
+            //
+            $column = new DateTimeViewColumn('chdate', 'chdate', 'Event Date', $this->dataset);
+            $column->SetOrderable(true);
+            $column->SetDateTimeFormat('Y-m-d H:i:s');
             $grid->AddSingleRecordViewColumn($column);
         }
     
         protected function AddEditColumns(Grid $grid)
         {
-            //
-            // Edit column for name field
-            //
-            $editor = new TextEdit('name_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Name', 'name', $editor, $this->dataset);
-            $editColumn->SetAllowSetToNull(true);
-            $this->ApplyCommonColumnEditProperties($editColumn);
-            $grid->AddEditColumn($editColumn);
+    
         }
     
         protected function AddMultiEditColumns(Grid $grid)
         {
-            //
-            // Edit column for name field
-            //
-            $editor = new TextEdit('name_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Name', 'name', $editor, $this->dataset);
-            $editColumn->SetAllowSetToNull(true);
-            $this->ApplyCommonColumnEditProperties($editColumn);
-            $grid->AddMultiEditColumn($editColumn);
+    
         }
     
         protected function AddInsertColumns(Grid $grid)
         {
-            //
-            // Edit column for name field
-            //
-            $editor = new TextEdit('name_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Name', 'name', $editor, $this->dataset);
-            $editColumn->SetAllowSetToNull(true);
-            $this->ApplyCommonColumnEditProperties($editColumn);
-            $grid->AddInsertColumn($editColumn);
-            $grid->SetShowAddButton(true && $this->GetSecurityInfo()->HasAddGrant());
+    
+            $grid->SetShowAddButton(false && $this->GetSecurityInfo()->HasAddGrant());
         }
     
         private function AddMultiUploadColumn(Grid $grid)
@@ -207,32 +225,17 @@
     
         protected function AddPrintColumns(Grid $grid)
         {
-            //
-            // View column for name field
-            //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
-            $column->SetOrderable(true);
-            $grid->AddPrintColumn($column);
+    
         }
     
         protected function AddExportColumns(Grid $grid)
         {
-            //
-            // View column for name field
-            //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
-            $column->SetOrderable(true);
-            $grid->AddExportColumn($column);
+    
         }
     
         private function AddCompareColumns(Grid $grid)
         {
-            //
-            // View column for name field
-            //
-            $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
-            $column->SetOrderable(true);
-            $grid->AddCompareColumn($column);
+    
         }
     
         private function AddCompareHeaderColumns(Grid $grid)
@@ -266,13 +269,13 @@
         {
             return ;
         }
-        protected function GetEnableModalGridDelete() { return true; }
+        public function GetEnableModalSingleRecordView() { return true; }
     
         protected function CreateGrid()
         {
             $result = new Grid($this, $this->dataset);
             if ($this->GetSecurityInfo()->HasDeleteGrant())
-               $result->SetAllowDeleteSelected(true);
+               $result->SetAllowDeleteSelected(false);
             else
                $result->SetAllowDeleteSelected(false);   
             
@@ -287,6 +290,7 @@
             $result->SetViewMode(ViewMode::TABLE);
             $result->setEnableRuntimeCustomization(true);
             $result->setMultiEditAllowed($this->GetSecurityInfo()->HasEditGrant() && true);
+            $result->setUseModalMultiEdit(true);
             $result->setTableBordered(true);
             $result->setTableCondensed(true);
             
@@ -309,7 +313,7 @@
             $this->setPrintListAvailable(true);
             $this->setPrintListRecordAvailable(false);
             $this->setPrintOneRecordAvailable(true);
-            $this->setAllowPrintSelectedRecords(true);
+            $this->setAllowPrintSelectedRecords(false);
             $this->setExportListAvailable(array());
             $this->setExportSelectedRecordsAvailable(array());
             $this->setExportListRecordAvailable(array());
@@ -468,12 +472,12 @@
 
     try
     {
-        $Page = new coursesPage("courses", "courses.php", GetCurrentUserPermissionSetForDataSource("courses"), 'UTF-8');
-        $Page->SetTitle('Branches');
-        $Page->SetMenuLabel('Branches');
+        $Page = new logviewPage("logview", "logview.php", GetCurrentUserPermissionSetForDataSource("logview"), 'UTF-8');
+        $Page->SetTitle('Log');
+        $Page->SetMenuLabel('Log');
         $Page->SetHeader(GetPagesHeader());
         $Page->SetFooter(GetPagesFooter());
-        $Page->SetRecordPermission(GetCurrentUserRecordPermissionsForDataSource("courses"));
+        $Page->SetRecordPermission(GetCurrentUserRecordPermissionsForDataSource("logview"));
         GetApplication()->SetMainPage($Page);
         GetApplication()->Run();
     }

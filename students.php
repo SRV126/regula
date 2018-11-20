@@ -44,10 +44,11 @@
             $this->dataset->addFields(
                 array(
                     new StringField('USN', true, true),
-                    new StringField('name', true),
+                    new StringField('name'),
                     new StringField('course')
                 )
             );
+            $this->dataset->AddLookupField('course', 'branch', new StringField('bcode'), new StringField('bname', false, false, false, false, 'course_bname', 'course_bname_branch'), 'course_bname_branch');
         }
     
         protected function DoPrepare() {
@@ -80,7 +81,7 @@
             return array(
                 new FilterColumn($this->dataset, 'USN', 'USN', 'USN'),
                 new FilterColumn($this->dataset, 'name', 'name', 'Name'),
-                new FilterColumn($this->dataset, 'course', 'course', 'Branch')
+                new FilterColumn($this->dataset, 'course', 'course_bname', 'Course')
             );
         }
     
@@ -110,14 +111,20 @@
             
             if ($this->GetSecurityInfo()->HasViewGrant())
             {
-                $operation = new LinkOperation($this->GetLocalizerCaptions()->GetMessageString('View'), OPERATION_VIEW, $this->dataset, $grid);
+                $operation = new AjaxOperation(OPERATION_VIEW,
+                    $this->GetLocalizerCaptions()->GetMessageString('View'),
+                    $this->GetLocalizerCaptions()->GetMessageString('View'), $this->dataset,
+                    $this->GetModalGridViewHandler(), $grid);
                 $operation->setUseImage(true);
                 $actions->addOperation($operation);
             }
             
             if ($this->GetSecurityInfo()->HasEditGrant())
             {
-                $operation = new LinkOperation($this->GetLocalizerCaptions()->GetMessageString('Edit'), OPERATION_EDIT, $this->dataset, $grid);
+                $operation = new AjaxOperation(OPERATION_EDIT,
+                    $this->GetLocalizerCaptions()->GetMessageString('Edit'),
+                    $this->GetLocalizerCaptions()->GetMessageString('Edit'), $this->dataset,
+                    $this->GetGridEditHandler(), $grid);
                 $operation->setUseImage(true);
                 $actions->addOperation($operation);
                 $operation->OnShow->AddListener('ShowEditButtonHandler', $this);
@@ -131,13 +138,6 @@
                 $operation->OnShow->AddListener('ShowDeleteButtonHandler', $this);
                 $operation->SetAdditionalAttribute('data-modal-operation', 'delete');
                 $operation->SetAdditionalAttribute('data-delete-handler-name', $this->GetModalGridDeleteHandler());
-            }
-            
-            if ($this->GetSecurityInfo()->HasAddGrant())
-            {
-                $operation = new LinkOperation($this->GetLocalizerCaptions()->GetMessageString('Copy'), OPERATION_COPY, $this->dataset, $grid);
-                $operation->setUseImage(true);
-                $actions->addOperation($operation);
             }
         }
     
@@ -166,9 +166,9 @@
             $grid->AddViewColumn($column);
             
             //
-            // View column for course field
+            // View column for bname field
             //
-            $column = new TextViewColumn('course', 'course', 'Branch', $this->dataset);
+            $column = new TextViewColumn('course', 'course_bname', 'Course', $this->dataset);
             $column->SetOrderable(true);
             $column->setMinimalVisibility(ColumnVisibility::PHONE);
             $column->SetDescription('');
@@ -195,9 +195,9 @@
             $grid->AddSingleRecordViewColumn($column);
             
             //
-            // View column for course field
+            // View column for bname field
             //
-            $column = new TextViewColumn('course', 'course', 'Branch', $this->dataset);
+            $column = new TextViewColumn('course', 'course_bname', 'Course', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddSingleRecordViewColumn($column);
         }
@@ -229,9 +229,21 @@
             //
             // Edit column for course field
             //
-            $editor = new TextEdit('course_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Branch', 'course', $editor, $this->dataset);
+            $editor = new DynamicCombobox('course_edit', $this->CreateLinkBuilder());
+            $editor->setAllowClear(true);
+            $editor->setMinimumInputLength(0);
+            $lookupDataset = new TableDataset(
+                MySqlIConnectionFactory::getInstance(),
+                GetConnectionOptions(),
+                '`branch`');
+            $lookupDataset->addFields(
+                array(
+                    new StringField('bname'),
+                    new StringField('bcode', true, true)
+                )
+            );
+            $lookupDataset->setOrderByField('bname', 'ASC');
+            $editColumn = new DynamicLookupEditColumn('Course', 'course', 'course_bname', 'edit_course_bname_search', $editor, $this->dataset, $lookupDataset, 'bcode', 'bname', '');
             $editColumn->SetAllowSetToNull(true);
             $this->ApplyCommonColumnEditProperties($editColumn);
             $grid->AddEditColumn($editColumn);
@@ -253,9 +265,21 @@
             //
             // Edit column for course field
             //
-            $editor = new TextEdit('course_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Branch', 'course', $editor, $this->dataset);
+            $editor = new DynamicCombobox('course_edit', $this->CreateLinkBuilder());
+            $editor->setAllowClear(true);
+            $editor->setMinimumInputLength(0);
+            $lookupDataset = new TableDataset(
+                MySqlIConnectionFactory::getInstance(),
+                GetConnectionOptions(),
+                '`branch`');
+            $lookupDataset->addFields(
+                array(
+                    new StringField('bname'),
+                    new StringField('bcode', true, true)
+                )
+            );
+            $lookupDataset->setOrderByField('bname', 'ASC');
+            $editColumn = new DynamicLookupEditColumn('Course', 'course', 'course_bname', 'multi_edit_course_bname_search', $editor, $this->dataset, $lookupDataset, 'bcode', 'bname', '');
             $editColumn->SetAllowSetToNull(true);
             $this->ApplyCommonColumnEditProperties($editColumn);
             $grid->AddMultiEditColumn($editColumn);
@@ -288,9 +312,21 @@
             //
             // Edit column for course field
             //
-            $editor = new TextEdit('course_edit');
-            $editor->SetMaxLength(40);
-            $editColumn = new CustomEditColumn('Branch', 'course', $editor, $this->dataset);
+            $editor = new DynamicCombobox('course_edit', $this->CreateLinkBuilder());
+            $editor->setAllowClear(true);
+            $editor->setMinimumInputLength(0);
+            $lookupDataset = new TableDataset(
+                MySqlIConnectionFactory::getInstance(),
+                GetConnectionOptions(),
+                '`branch`');
+            $lookupDataset->addFields(
+                array(
+                    new StringField('bname'),
+                    new StringField('bcode', true, true)
+                )
+            );
+            $lookupDataset->setOrderByField('bname', 'ASC');
+            $editColumn = new DynamicLookupEditColumn('Course', 'course', 'course_bname', 'insert_course_bname_search', $editor, $this->dataset, $lookupDataset, 'bcode', 'bname', '');
             $editColumn->SetAllowSetToNull(true);
             $this->ApplyCommonColumnEditProperties($editColumn);
             $grid->AddInsertColumn($editColumn);
@@ -321,9 +357,9 @@
             $grid->AddPrintColumn($column);
             
             //
-            // View column for course field
+            // View column for bname field
             //
-            $column = new TextViewColumn('course', 'course', 'Branch', $this->dataset);
+            $column = new TextViewColumn('course', 'course_bname', 'Course', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddPrintColumn($column);
         }
@@ -347,9 +383,9 @@
             $grid->AddExportColumn($column);
             
             //
-            // View column for course field
+            // View column for bname field
             //
-            $column = new TextViewColumn('course', 'course', 'Branch', $this->dataset);
+            $column = new TextViewColumn('course', 'course_bname', 'Course', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddExportColumn($column);
         }
@@ -373,9 +409,9 @@
             $grid->AddCompareColumn($column);
             
             //
-            // View column for course field
+            // View column for bname field
             //
-            $column = new TextViewColumn('course', 'course', 'Branch', $this->dataset);
+            $column = new TextViewColumn('course', 'course_bname', 'Course', $this->dataset);
             $column->SetOrderable(true);
             $grid->AddCompareColumn($column);
         }
@@ -411,6 +447,12 @@
         {
             return ;
         }
+        
+        public function GetEnableModalGridInsert() { return true; }
+        public function GetEnableModalSingleRecordView() { return true; }
+        
+        public function GetEnableModalGridEdit() { return true; }
+        
         protected function GetEnableModalGridDelete() { return true; }
     
         protected function CreateGrid()
@@ -432,6 +474,7 @@
             $result->SetViewMode(ViewMode::TABLE);
             $result->setEnableRuntimeCustomization(true);
             $result->setMultiEditAllowed($this->GetSecurityInfo()->HasEditGrant() && true);
+            $result->setUseModalMultiEdit(true);
             $result->setTableBordered(true);
             $result->setTableCondensed(true);
             
@@ -454,7 +497,7 @@
             $this->setPrintListAvailable(true);
             $this->setPrintListRecordAvailable(false);
             $this->setPrintOneRecordAvailable(true);
-            $this->setAllowPrintSelectedRecords(true);
+            $this->setAllowPrintSelectedRecords(false);
             $this->setExportListAvailable(array());
             $this->setExportSelectedRecordsAvailable(array());
             $this->setExportListRecordAvailable(array());
@@ -492,12 +535,54 @@
             $handler = new ShowTextBlobHandler($this->dataset, $this, 'studentsGrid_name_handler_compare', $column);
             GetApplication()->RegisterHTTPHandler($handler);
             
+            $lookupDataset = new TableDataset(
+                MySqlIConnectionFactory::getInstance(),
+                GetConnectionOptions(),
+                '`branch`');
+            $lookupDataset->addFields(
+                array(
+                    new StringField('bname'),
+                    new StringField('bcode', true, true)
+                )
+            );
+            $lookupDataset->setOrderByField('bname', 'ASC');
+            $handler = new DynamicSearchHandler($lookupDataset, $this, 'insert_course_bname_search', 'bcode', 'bname', null, 20);
+            GetApplication()->RegisterHTTPHandler($handler);
+            
             //
             // View column for name field
             //
             $column = new TextViewColumn('name', 'name', 'Name', $this->dataset);
             $column->SetOrderable(true);
             $handler = new ShowTextBlobHandler($this->dataset, $this, 'studentsGrid_name_handler_view', $column);
+            GetApplication()->RegisterHTTPHandler($handler);
+            
+            $lookupDataset = new TableDataset(
+                MySqlIConnectionFactory::getInstance(),
+                GetConnectionOptions(),
+                '`branch`');
+            $lookupDataset->addFields(
+                array(
+                    new StringField('bname'),
+                    new StringField('bcode', true, true)
+                )
+            );
+            $lookupDataset->setOrderByField('bname', 'ASC');
+            $handler = new DynamicSearchHandler($lookupDataset, $this, 'edit_course_bname_search', 'bcode', 'bname', null, 20);
+            GetApplication()->RegisterHTTPHandler($handler);
+            
+            $lookupDataset = new TableDataset(
+                MySqlIConnectionFactory::getInstance(),
+                GetConnectionOptions(),
+                '`branch`');
+            $lookupDataset->addFields(
+                array(
+                    new StringField('bname'),
+                    new StringField('bcode', true, true)
+                )
+            );
+            $lookupDataset->setOrderByField('bname', 'ASC');
+            $handler = new DynamicSearchHandler($lookupDataset, $this, 'multi_edit_course_bname_search', 'bcode', 'bname', null, 20);
             GetApplication()->RegisterHTTPHandler($handler);
         }
        

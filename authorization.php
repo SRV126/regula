@@ -15,74 +15,81 @@ include_once 'components/security/user_identity_storage/user_identity_session_st
 require_once 'database_engine/mysql_engine.php';
 
 $grants = array('guest' => 
-        array('attendance' => new PermissionSet(false, false, false, false),
+        array('attendance2' => new PermissionSet(false, false, false, false),
         'shortage' => new PermissionSet(false, false, false, false),
         'students' => new PermissionSet(false, false, false, false),
         'units' => new PermissionSet(false, false, false, false),
-        'courses' => new PermissionSet(false, false, false, false),
+        'branch' => new PermissionSet(false, false, false, false),
+        'logview' => new PermissionSet(false, false, false, false),
         'membership_userrecords' => new PermissionSet(false, false, false, false))
     ,
     'defaultUser' => 
-        array('attendance' => new PermissionSet(false, false, false, false),
-        'shortage' => new PermissionSet(false, false, false, false),
-        'students' => new PermissionSet(false, false, false, false),
-        'units' => new PermissionSet(false, false, false, false),
-        'courses' => new PermissionSet(false, false, false, false),
-        'membership_userrecords' => new PermissionSet(false, false, false, false))
+        array('attendance2' => new PermissionSet(true, false, false, false),
+        'shortage' => new PermissionSet(true, false, false, false),
+        'students' => new PermissionSet(true, false, false, false),
+        'units' => new PermissionSet(true, false, false, false),
+        'branch' => new PermissionSet(true, false, false, false),
+        'logview' => new PermissionSet(false, false, false, false),
+        'membership_userrecords' => new PermissionSet(true, false, false, false))
     ,
-    'abhijeet' => 
-        array('attendance' => new PermissionSet(false, false, false, false),
+    'saurav' => 
+        array('attendance2' => new PermissionSet(false, false, false, false),
         'shortage' => new PermissionSet(false, false, false, false),
         'students' => new PermissionSet(false, false, false, false),
         'units' => new PermissionSet(false, false, false, false),
-        'courses' => new PermissionSet(false, false, false, false),
+        'branch' => new PermissionSet(false, false, false, false),
+        'logview' => new AdminPermissionSet(),
         'membership_userrecords' => new PermissionSet(false, false, false, false))
     ,
     'faculty' => 
-        array('attendance' => new PermissionSet(false, false, false, false),
+        array('attendance2' => new PermissionSet(false, false, false, false),
         'shortage' => new PermissionSet(false, false, false, false),
         'students' => new PermissionSet(false, false, false, false),
         'units' => new PermissionSet(false, false, false, false),
-        'courses' => new PermissionSet(false, false, false, false),
+        'branch' => new PermissionSet(false, false, false, false),
+        'logview' => new AdminPermissionSet(),
         'membership_userrecords' => new PermissionSet(false, false, false, false))
     ,
-    'saurav' => 
-        array('attendance' => new PermissionSet(false, false, false, false),
+    'abhijeet' => 
+        array('attendance2' => new PermissionSet(false, false, false, false),
         'shortage' => new PermissionSet(false, false, false, false),
         'students' => new PermissionSet(false, false, false, false),
         'units' => new PermissionSet(false, false, false, false),
-        'courses' => new PermissionSet(false, false, false, false),
+        'branch' => new PermissionSet(false, false, false, false),
+        'logview' => new AdminPermissionSet(),
         'membership_userrecords' => new PermissionSet(false, false, false, false))
     ,
     'unnati' => 
-        array('attendance' => new PermissionSet(false, false, false, false),
+        array('attendance2' => new PermissionSet(false, false, false, false),
         'shortage' => new PermissionSet(false, false, false, false),
         'students' => new PermissionSet(false, false, false, false),
         'units' => new PermissionSet(false, false, false, false),
-        'courses' => new PermissionSet(false, false, false, false),
+        'branch' => new PermissionSet(false, false, false, false),
+        'logview' => new AdminPermissionSet(),
         'membership_userrecords' => new PermissionSet(false, false, false, false))
     );
 
-$appGrants = array('guest' => new PermissionSet(true, false, false, false),
-    'defaultUser' => new PermissionSet(true, false, false, false),
-    'abhijeet' => new AdminPermissionSet(),
-    'faculty' => new AdminPermissionSet(),
+$appGrants = array('guest' => new PermissionSet(false, false, false, false),
+    'defaultUser' => new PermissionSet(false, false, false, false),
     'saurav' => new AdminPermissionSet(),
+    'faculty' => new AdminPermissionSet(),
+    'abhijeet' => new AdminPermissionSet(),
     'unnati' => new AdminPermissionSet());
 
 $dataSourceRecordPermissions = array();
 
-$tableCaptions = array('attendance' => 'Attendance',
+$tableCaptions = array('attendance2' => 'Attendance',
 'shortage' => 'Shortage',
 'students' => 'Students',
 'units' => 'Subjects',
-'courses' => 'Branches',
+'branch' => 'Branch',
+'logview' => 'Log',
 'membership_userrecords' => 'About');
 
 $usersTableInfo = array(
     'TableName' => 'membership_users',
     'UserId' => 'memberID',
-    'UserName' => 'memberID',
+    'UserName' => 'passMD5',
     'Password' => 'passMD5',
     'Email' => '',
     'UserToken' => '',
@@ -121,7 +128,7 @@ function PasswordResetComplete($username, $email)
 
 function CreatePasswordHasher()
 {
-    $hasher = CreateHasher('MD5');
+    $hasher = CreateHasher('');
     if ($hasher instanceof CustomStringHasher) {
         $hasher->OnEncryptPassword->AddListener('EncryptPassword');
         $hasher->OnVerifyPassword->AddListener('VerifyPassword');

@@ -31,7 +31,7 @@ function OnBeforeLogout($userName, $connection) {
 SetUpUserAuthorization();
 
 $page = new LoginPage(
-    'attendance.php',
+    'attendance2.php',
     dirname(__FILE__),
     GetApplication()->GetUserAuthentication(),
     MySqlIConnectionFactory::getInstance(),
