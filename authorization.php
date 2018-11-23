@@ -15,13 +15,13 @@ include_once 'components/security/user_identity_storage/user_identity_session_st
 require_once 'database_engine/mysql_engine.php';
 
 $grants = array('guest' => 
-        array('attendance2' => new PermissionSet(false, false, false, false),
-        'shortage' => new PermissionSet(false, false, false, false),
-        'students' => new PermissionSet(false, false, false, false),
-        'units' => new PermissionSet(false, false, false, false),
-        'branch' => new PermissionSet(false, false, false, false),
+        array('attendance2' => new PermissionSet(true, false, false, false),
+        'shortage' => new PermissionSet(true, false, false, false),
+        'students' => new PermissionSet(true, false, false, false),
+        'units' => new PermissionSet(true, false, false, false),
+        'branch' => new PermissionSet(true, false, false, false),
         'logview' => new PermissionSet(false, false, false, false),
-        'membership_userrecords' => new PermissionSet(false, false, false, false))
+        'membership_userrecords' => new PermissionSet(true, false, false, false))
     ,
     'defaultUser' => 
         array('attendance2' => new PermissionSet(true, false, false, false),
